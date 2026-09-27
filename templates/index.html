@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EndoKids AI - Çocuk Endokrinolojisi Hasta Takip & Klinik Danışman</title>
+    <!-- Modern Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Base Stylesheet link -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Main Dashboard Container -->
+    <div class="dashboard-container">
+        
+        <!-- ================= SOL PANEL: HASTA YÖNETİMİ ================= -->
+        <aside class="sidebar">
+            <!-- Brand Header -->
+            <div class="brand-header">
+                <div class="brand-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                </div>
+                <div class="brand-info">
+                    <h1>EndoKids AI</h1>
+                    <div class="status-indicator">
+                        <span class="pulse-dot"></span>
+                        <span class="status-text">Gemini 2.5 Flash Aktif</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gemini API Key Dynamic Input -->
+            <div class="api-key-container">
+                <div class="api-key-input-wrapper">
+                    <input type="password" id="api-key-input" placeholder="Gemini API Key Girin..." autocomplete="off">
+                    <button type="button" id="btn-toggle-api-key" class="btn-toggle-visibility" title="Göster/Gizle">
+                        <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="sidebar-actions">
+                <button id="btn-open-modal" class="btn btn-primary btn-block">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span>Yeni Hasta Ekle</span>
+                </button>
+                
+                <!-- Search bar -->
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="patient-search" placeholder="Hasta ara..." autocomplete="off">
+                </div>
+            </div>
+
+            <!-- Scrollable Patients List -->
+            <div class="patient-list-container">
+                <div class="list-header">
+                    <h2>Hasta Listesi</h2>
+                    <span id="patient-count" class="badge">0 Hasta</span>
+                </div>
+                <div id="patient-list" class="patient-list">
+                    <!-- Dynamic patient cards will be loaded here by JavaScript -->
+                    <div class="list-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        <p>Kayıtlı hasta bulunmamaktadır. Sağlık takibine başlamak için yukarıdaki butondan yeni bir hasta ekleyin.</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ================= SAĞ PANEL: SOHBET & AI DANIŞMAN ================= -->
+        <main class="chat-panel">
+            
+            <!-- A: EKRAN BOŞ / HASTA SEÇİLMEDİĞİNDE GÖSTERİLECEK ALAN -->
+            <div id="empty-chat" class="empty-chat-state">
+                <div class="illustration-container">
+                    <div class="glow-sphere"></div>
+                    <svg class="brain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44 2.5 2.5 0 0 1 0-3.12 3 3 0 0 1 0-4.88 2.5 2.5 0 0 1 0-3.12A2.5 2.5 0 0 1 9.5 2z"></path>
+                        <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44 2.5 2.5 0 0 0 0-3.12 3 3 0 0 0 0-4.88 2.5 2.5 0 0 0 0-3.12A2.5 2.5 0 0 0 14.5 2z"></path>
+                    </svg>
+                </div>
+                <h2>Klinik AI Asistan Paneline Hoş Geldiniz</h2>
+                <p>Çocuk Endokrinolojisi AI Danışmanı ile sohbet etmek ve hastanızın profilini otomatik güncellemek için sol listeden bir hasta seçin veya yeni bir hasta ekleyin.</p>
+                
+                <!-- Quick features cards -->
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="f-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                            </svg>
+                        </div>
+                        <h3>Otomatik Klinik Çıkarım</h3>
+                        <p>Siz hasta hakkında konuştukça yaş, boy, kilo, şikayet ve notlar arka planda yapay zeka tarafından tespit edilip profil kartına işlenir.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="f-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                        </div>
+                        <h3>Çocuk Endokrinoloji Uzmanlığı</h3>
+                        <p>Büyüme geriliği, puberte bozuklukları, diyabet ve tiroid hastalıklarında profesyonel, kılavuz odaklı klinik danışmanlık.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- B: AKTİF SOHBET PENCERESİ -->
+            <div id="active-chat" class="active-chat-container" style="display: none;">
+                <!-- Chat Header & Patient Mini Profile -->
+                <header class="chat-header">
+                    <div class="active-patient-identity">
+                        <div class="patient-avatar">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 id="chat-patient-name">Hasta Adı Soyadı</h2>
+                            <p class="subtitle">AI Destekli Çocuk Endokrin Takip Kartı</p>
+                        </div>
+                    </div>
+
+                    <!-- Live Mini Badges displaying AI data -->
+                    <div class="patient-quick-stats">
+                        <div class="stat-badge gender-badge" id="stat-gender" title="Cinsiyet">
+                            <span class="label">Cinsiyet:</span> <span class="val">-</span>
+                        </div>
+                        <div class="stat-badge age-badge" id="stat-age" title="Yaş">
+                            <span class="label">Yaş:</span> <span class="val">-</span>
+                        </div>
+                        <div class="stat-badge height-badge" id="stat-height" title="Boy">
+                            <span class="label">Boy:</span> <span class="val">-</span>
+                        </div>
+                        <div class="stat-badge weight-badge" id="stat-weight" title="Kilo">
+                            <span class="label">Kilo:</span> <span class="val">-</span>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Scrollable Messages Area -->
+                <div id="chat-messages" class="chat-messages">
+                    <!-- Dynamic messages render here -->
+                </div>
+
+                <!-- Chat Input Controls -->
+                <footer class="chat-footer">
+                    <form id="chat-form" class="chat-form">
+                        <input type="text" id="chat-input" placeholder="AI Klinik Danışmanına hastanızın şikayetlerini, bulgularını veya laboratuvar değerlerini yazın..." autocomplete="off">
+                        <button type="submit" id="btn-send" class="btn btn-send">
+                            <svg class="send-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                        </button>
+                    </form>
+                    <div class="input-tip">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tip-icon">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        <span>İpucu: *"Hasta 10 yaşında erkek, boyu 135 cm, kilosu 33 kg. Son bir aydır boy uzaması yavaşlamış"* yazarak hastanın bilgilerini anında çıkarabilirsiniz.</span>
+                    </div>
+                </footer>
+            </div>
+        </main>
+
+    </div>
+
+    <!-- ================= YENİ HASTA EKLEME MODALI ================= -->
+    <div id="add-patient-modal" class="modal-overlay">
+        <div class="modal-card">
+            <header class="modal-header">
+                <h3>Yeni Hasta Ekle</h3>
+                <button id="btn-close-modal" class="btn-close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </header>
+            
+            <form id="add-patient-form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="new-patient-name">Hastanın Adı Soyadı</label>
+                        <input type="text" id="new-patient-name" placeholder="Örn: Ahmet Yılmaz" required autocomplete="off">
+                        <span class="input-hint">Kayıt oluşturulduktan sonra hastanın yaş, boy, kilo vb. tıbbi detayları AI sohbetinde bahsettiğinizde otomatik dolacaktır.</span>
+                    </div>
+                    <div id="modal-error" class="modal-error-msg" style="display: none;"></div>
+                </div>
+                <footer class="modal-footer">
+                    <button type="button" id="btn-cancel-modal" class="btn btn-secondary">İptal</button>
+                    <button type="submit" class="btn btn-primary">Hasta Ekle</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- Import JavaScript main file -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
